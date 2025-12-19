@@ -32,7 +32,7 @@ export default function MakeChangeRequestPage() {
           return;
         }
 
-        const res = await fetch("http://localhost:3000/employee-profile", {
+        const res = await fetch("http://localhost:5000/employee-profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -95,7 +95,7 @@ export default function MakeChangeRequestPage() {
 
     const fetchPositions = async () => {
       try {
-        const res = await fetch("http://localhost:3000/organization-structure/positions", {
+        const res = await fetch("http://localhost:5000/organization-structure/positions", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -164,7 +164,7 @@ export default function MakeChangeRequestPage() {
       }
 
       const response = await fetch(
-        "http://localhost:3000/organization-structure/change-request/position",
+        "http://localhost:5000/organization-structure/change-request/position",
         {
           method: "POST",
           headers: {

@@ -23,7 +23,7 @@ export default function CreateDepartmentChangeRequestPage() {
       }
 
       const response = await fetch(
-        "http://localhost:3000/organization-structure/change-request/department",
+        "http://localhost:5000/organization-structure/change-request/department",
         {
           method: "POST",
           headers: {

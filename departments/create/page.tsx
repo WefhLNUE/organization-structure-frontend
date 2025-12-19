@@ -28,7 +28,7 @@ export default function CreateDepartmentPage() {
 
     try {
       const token = localStorage.getItem('accessToken'); // Assuming token is stored
-      const response = await fetch('http://localhost:3000/organization-structure/departments', {
+      const response = await fetch('http://localhost:5000/organization-structure/departments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
