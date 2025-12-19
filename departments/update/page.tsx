@@ -50,25 +50,16 @@ export default function UpdateDepartmentPage() {
           }),
         ]);
 
-        console.log("Departments response status:", deptRes.status, deptRes.statusText);
-        console.log("Positions response status:", posRes.status, posRes.statusText);
-
         if (deptRes.ok) {
           try {
             const deptData = await deptRes.json();
-            console.log("Departments data received:", deptData);
-            console.log("Number of departments:", Array.isArray(deptData) ? deptData.length : "Not an array");
-
-            // Handle case where headPositionId might be populated as an object
             const normalizedDepartments = Array.isArray(deptData) ? deptData.map((dept: any) => ({
               ...dept,
               headPositionId: typeof dept.headPositionId === 'object' && dept.headPositionId?._id
                 ? dept.headPositionId._id
                 : dept.headPositionId,
             })) : [];
-
             setDepartments(normalizedDepartments);
-            console.log("Departments set in state:", normalizedDepartments.length);
           } catch (parseError) {
             console.error("Error parsing departments JSON:", parseError);
             setMessage({ type: "error", text: "Failed to parse departments data" });
@@ -76,10 +67,8 @@ export default function UpdateDepartmentPage() {
         } else {
           try {
             const errorText = await deptRes.text();
-            console.error("Error fetching departments:", deptRes.status, errorText);
             setMessage({ type: "error", text: `Failed to load departments (${deptRes.status}): ${errorText}` });
           } catch (error) {
-            console.error("Error reading error response:", error);
             setMessage({ type: "error", text: `Failed to load departments (${deptRes.status})` });
           }
         }
@@ -87,8 +76,6 @@ export default function UpdateDepartmentPage() {
         if (posRes.ok) {
           try {
             const posData = await posRes.json();
-            console.log("Positions data received:", posData);
-            console.log("Number of positions:", Array.isArray(posData) ? posData.length : "Not an array");
             setPositions(Array.isArray(posData) ? posData : []);
           } catch (parseError) {
             console.error("Error parsing positions JSON:", parseError);
@@ -97,10 +84,8 @@ export default function UpdateDepartmentPage() {
         } else {
           try {
             const errorText = await posRes.text();
-            console.error("Error fetching positions:", posRes.status, errorText);
             setMessage({ type: "error", text: `Failed to load positions (${posRes.status}): ${errorText}` });
           } catch (error) {
-            console.error("Error reading error response:", error);
             setMessage({ type: "error", text: `Failed to load positions (${posRes.status})` });
           }
         }
@@ -181,7 +166,6 @@ export default function UpdateDepartmentPage() {
 
       if (res.ok) {
         setMessage({ type: "success", text: "Department updated successfully!" });
-        // Update local state
         setDepartments((prev) =>
           prev.map((dept) => (dept._id === selectedId ? { ...dept, ...formData } : dept))
         );
@@ -197,23 +181,48 @@ export default function UpdateDepartmentPage() {
     }
   };
 
-  const getPositionTitle = (posId: string | any) => {
-    // Handle case where posId might be an object (populated)
-    const id = typeof posId === 'object' && posId?._id ? posId._id : posId;
-    return positions.find((p) => p._id === id)?.title || "Unknown";
+  const inputStyle = {
+    width: '100%',
+    padding: '0.625rem 0.875rem',
+    border: '1px solid var(--border-medium)',
+    borderRadius: '0.5rem',
+    fontSize: '0.875rem',
+    color: 'var(--text-primary)',
+    backgroundColor: 'var(--bg-primary)',
+    transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+  };
+
+  const focusStyle = {
+    outline: 'none',
+    borderColor: 'var(--border-focus)',
+    boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Update Department</h1>
+    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ marginBottom: '2rem' }}>
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--org-structure)', marginBottom: '0.5rem' }}>
+          Update Department
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
+          Modify existing department information
+        </p>
+      </div>
 
       {/* Department Dropdown */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium mb-2">Select Department</label>
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+          Select Department
+        </label>
         <select
           value={selectedId}
           onChange={handleSelectDepartment}
-          className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          style={inputStyle}
+          onFocus={(e) => Object.assign(e.target.style, focusStyle)}
+          onBlur={(e) => {
+            e.target.style.borderColor = 'var(--border-medium)';
+            e.target.style.boxShadow = 'none';
+          }}
         >
           <option value="">-- Select a Department --</option>
           {departments.length > 0 ? (
@@ -225,59 +234,96 @@ export default function UpdateDepartmentPage() {
           ) : (
             <option value="" disabled>No departments available</option>
           )}
-        </select>
+        </select> 
       </div>
 
       {/* Form Fields */}
       {selectedId && (
-        <div className="space-y-4 border border-gray-200 p-6 rounded-lg bg-gray-50">
+        <div style={{
+          backgroundColor: 'var(--bg-primary)',
+          border: '1px solid var(--border-light)',
+          borderRadius: '0.75rem',
+          padding: '2rem',
+          boxShadow: 'var(--shadow-sm)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.5rem',
+        }}>
           {/* Code */}
           <div>
-            <label className="block text-sm font-medium mb-1">Department Code *</label>
+            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+              Department Code *
+            </label>
             <input
               type="text"
               name="code"
               value={formData.code || ""}
               onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={inputStyle}
               placeholder="e.g., DEPT001"
+              onFocus={(e) => Object.assign(e.target.style, focusStyle)}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-medium)';
+                e.target.style.boxShadow = 'none';
+              }}
             />
           </div>
 
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium mb-1">Department Name *</label>
+            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+              Department Name *
+            </label>
             <input
               type="text"
               name="name"
               value={formData.name || ""}
               onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={inputStyle}
               placeholder="e.g., Human Resources"
+              onFocus={(e) => Object.assign(e.target.style, focusStyle)}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-medium)';
+                e.target.style.boxShadow = 'none';
+              }}
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium mb-1">Description</label>
+            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+              Description
+            </label>
             <textarea
               name="description"
               value={formData.description || ""}
               onChange={handleInputChange}
               rows={4}
-              className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{ ...inputStyle, fontFamily: 'inherit', resize: 'vertical' }}
               placeholder="Department description..."
+              onFocus={(e) => Object.assign(e.target.style, focusStyle)}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-medium)';
+                e.target.style.boxShadow = 'none';
+              }}
             />
           </div>
 
           {/* Head Position */}
           <div>
-            <label className="block text-sm font-medium mb-1">Head Position</label>
+            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+              Head Position
+            </label>
             <select
               name="headPositionId"
               value={formData.headPositionId || ""}
               onChange={handleInputChange}
-              className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={inputStyle}
+              onFocus={(e) => Object.assign(e.target.style, focusStyle)}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-medium)';
+                e.target.style.boxShadow = 'none';
+              }}
             >
               <option value="">-- None --</option>
               {positions.map((pos) => (
@@ -289,16 +335,16 @@ export default function UpdateDepartmentPage() {
           </div>
 
           {/* Is Active */}
-          <div className="flex items-center">
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <input
               type="checkbox"
               name="isActive"
               id="isActive"
               checked={formData.isActive ?? true}
               onChange={handleInputChange}
-              className="w-4 h-4 text-blue-500 rounded focus:ring-2 focus:ring-blue-500"
+              style={{ width: '1rem', height: '1rem', marginRight: '0.5rem', cursor: 'pointer' }}
             />
-            <label htmlFor="isActive" className="ml-2 text-sm font-medium">
+            <label htmlFor="isActive" style={{ color: 'var(--text-secondary)', fontWeight: '500', fontSize: '0.875rem', cursor: 'pointer' }}>
               Active Department
             </label>
           </div>
@@ -306,11 +352,13 @@ export default function UpdateDepartmentPage() {
           {/* Message */}
           {message && (
             <div
-              className={`p-3 rounded-lg ${
-                message.type === "success"
-                  ? "bg-green-100 text-green-700 border border-green-300"
-                  : "bg-red-100 text-red-700 border border-red-300"
-              }`}
+              style={{
+                padding: '1rem',
+                borderRadius: '0.5rem',
+                backgroundColor: message.type === "success" ? 'var(--success-light)' : 'var(--error-light)',
+                color: message.type === "success" ? 'var(--success-dark)' : 'var(--error-dark)',
+                borderLeft: `4px solid ${message.type === "success" ? 'var(--success)' : 'var(--error)'}`,
+              }}
             >
               {message.text}
             </div>
@@ -320,7 +368,28 @@ export default function UpdateDepartmentPage() {
           <button
             onClick={handleSave}
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            style={{
+              width: '100%',
+              backgroundColor: 'var(--org-structure)',
+              color: 'var(--text-inverse)',
+              border: 'none',
+              padding: '0.625rem 1.25rem',
+              borderRadius: '0.5rem',
+              fontWeight: '500',
+              transition: 'all 0.2s ease',
+              boxShadow: 'var(--shadow-sm)',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.5 : 1,
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
           >
             {loading ? "Saving..." : "Save Changes"}
           </button>

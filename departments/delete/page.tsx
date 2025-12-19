@@ -21,7 +21,7 @@ export default function DeleteDepartmentPage() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/organization-structure/departments/${id}`, {
+      const response = await fetch(`http://localhost:3000/organization-structure/departments/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -42,32 +42,102 @@ export default function DeleteDepartmentPage() {
     }
   };
 
+  const inputStyle = {
+    width: '100%',
+    padding: '0.625rem 0.875rem',
+    border: '1px solid var(--border-medium)',
+    borderRadius: '0.5rem',
+    fontSize: '0.875rem',
+    color: 'var(--text-primary)',
+    backgroundColor: 'var(--bg-primary)',
+    transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+  };
+
   return (
-    <div className="p-8 max-w-2xl">
-      <h1 className="text-2xl font-semibold mb-6">Delete Department</h1>
+    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ marginBottom: '2rem' }}>
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--org-structure)', marginBottom: '0.5rem' }}>
+          Delete Department
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
+          Remove a department from the organization
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-medium mb-1">Department ID *</label>
-          <input
-            type="text"
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-            required
-            className="w-full border rounded px-3 py-2"
-          />
-        </div>
+      <div style={{
+        backgroundColor: 'var(--bg-primary)',
+        border: '1px solid var(--border-light)',
+        borderRadius: '0.75rem',
+        padding: '2rem',
+        boxShadow: 'var(--shadow-sm)',
+      }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div>
+            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+              Department ID *
+            </label>
+            <input
+              type="text"
+              value={id}
+              onChange={(e) => setId(e.target.value)}
+              required
+              style={inputStyle}
+              onFocus={(e) => {
+                e.target.style.outline = 'none';
+                e.target.style.borderColor = 'var(--border-focus)';
+                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-medium)';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
-        >
-          {loading ? 'Deleting...' : 'Delete Department'}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              backgroundColor: 'var(--error)',
+              color: 'var(--text-inverse)',
+              border: 'none',
+              padding: '0.625rem 1.25rem',
+              borderRadius: '0.5rem',
+              fontWeight: '500',
+              transition: 'all 0.2s ease',
+              boxShadow: 'var(--shadow-sm)',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.5 : 1,
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.currentTarget.style.backgroundColor = 'var(--error-dark)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!loading) {
+                e.currentTarget.style.backgroundColor = 'var(--error)';
+              }
+            }}
+          >
+            {loading ? 'Deleting...' : 'Delete Department'}
+          </button>
+        </form>
 
-      {message && <p className="mt-4 text-red-600">{message}</p>}
+        {message && (
+          <div style={{
+            marginTop: '1.5rem',
+            padding: '1rem',
+            borderRadius: '0.5rem',
+            backgroundColor: message.includes('Error') ? 'var(--error-light)' : 'var(--success-light)',
+            color: message.includes('Error') ? 'var(--error-dark)' : 'var(--success-dark)',
+            borderLeft: `4px solid ${message.includes('Error') ? 'var(--error)' : 'var(--success)'}`,
+          }}>
+            {message}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

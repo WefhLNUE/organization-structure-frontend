@@ -58,79 +58,212 @@ export default function CreateDepartmentPage() {
   };
 
   return (
-    <div className="p-8 max-w-2xl">
-      <h1 className="text-2xl font-semibold mb-6">Create Department</h1>
+    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ marginBottom: '2rem' }}>
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--org-structure)', marginBottom: '0.5rem' }}>
+          Create Department
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
+          Add a new department to the organization
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-medium mb-1">Code *</label>
-          <input
-            type="text"
-            name="code"
-            value={formData.code}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2"
-          />
-        </div>
+      <div style={{
+        backgroundColor: 'var(--bg-primary)',
+        border: '1px solid var(--border-light)',
+        borderRadius: '0.75rem',
+        padding: '2rem',
+        boxShadow: 'var(--shadow-sm)',
+      }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div>
+            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+              Code *
+            </label>
+            <input
+              type="text"
+              name="code"
+              value={formData.code}
+              onChange={handleChange}
+              required
+              className="form-input"
+              style={{
+                width: '100%',
+                padding: '0.625rem 0.875rem',
+                border: '1px solid var(--border-medium)',
+                borderRadius: '0.5rem',
+                fontSize: '0.875rem',
+                color: 'var(--text-primary)',
+                backgroundColor: 'var(--bg-primary)',
+                transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+              }}
+              onFocus={(e) => {
+                e.target.style.outline = 'none';
+                e.target.style.borderColor = 'var(--border-focus)';
+                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-medium)';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+          </div>
 
-        <div>
-          <label className="block font-medium mb-1">Name *</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2"
-          />
-        </div>
+          <div>
+            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+              Name *
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="form-input"
+              style={{
+                width: '100%',
+                padding: '0.625rem 0.875rem',
+                border: '1px solid var(--border-medium)',
+                borderRadius: '0.5rem',
+                fontSize: '0.875rem',
+                color: 'var(--text-primary)',
+                backgroundColor: 'var(--bg-primary)',
+                transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+              }}
+              onFocus={(e) => {
+                e.target.style.outline = 'none';
+                e.target.style.borderColor = 'var(--border-focus)';
+                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-medium)';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+          </div>
 
-        <div>
-          <label className="block font-medium mb-1">Description</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-            rows={3}
-          />
-        </div>
+          <div>
+            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+              Description
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="form-input"
+              rows={3}
+              style={{
+                width: '100%',
+                padding: '0.625rem 0.875rem',
+                border: '1px solid var(--border-medium)',
+                borderRadius: '0.5rem',
+                fontSize: '0.875rem',
+                color: 'var(--text-primary)',
+                backgroundColor: 'var(--bg-primary)',
+                fontFamily: 'inherit',
+                resize: 'vertical',
+                transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+              }}
+              onFocus={(e) => {
+                e.target.style.outline = 'none';
+                e.target.style.borderColor = 'var(--border-focus)';
+                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-medium)';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+          </div>
 
-        <div>
-          <label className="block font-medium mb-1">Head Position ID</label>
-          <input
-            type="text"
-            name="headPositionId"
-            value={formData.headPositionId}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-          />
-        </div>
+          <div>
+            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+              Head Position ID
+            </label>
+            <input
+              type="text"
+              name="headPositionId"
+              value={formData.headPositionId}
+              onChange={handleChange}
+              className="form-input"
+              style={{
+                width: '100%',
+                padding: '0.625rem 0.875rem',
+                border: '1px solid var(--border-medium)',
+                borderRadius: '0.5rem',
+                fontSize: '0.875rem',
+                color: 'var(--text-primary)',
+                backgroundColor: 'var(--bg-primary)',
+                transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+              }}
+              onFocus={(e) => {
+                e.target.style.outline = 'none';
+                e.target.style.borderColor = 'var(--border-focus)';
+                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-medium)';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+          </div>
 
-        <div>
-          <label className="flex items-center">
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <input
               type="checkbox"
               name="isActive"
               checked={formData.isActive}
               onChange={handleChange}
-              className="mr-2"
+              style={{ marginRight: '0.5rem', width: '1rem', height: '1rem', cursor: 'pointer' }}
             />
-            Is Active
-          </label>
-        </div>
+            <label style={{ color: 'var(--text-secondary)', fontWeight: '500', fontSize: '0.875rem', cursor: 'pointer' }}>
+              Is Active
+            </label>
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-        >
-          {loading ? 'Creating...' : 'Create Department'}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary"
+            style={{
+              backgroundColor: 'var(--org-structure)',
+              color: 'var(--text-inverse)',
+              border: 'none',
+              padding: '0.625rem 1.25rem',
+              borderRadius: '0.5rem',
+              fontWeight: '500',
+              transition: 'all 0.2s ease',
+              boxShadow: 'var(--shadow-sm)',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.5 : 1,
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            {loading ? 'Creating...' : 'Create Department'}
+          </button>
+        </form>
 
-      {message && <p className="mt-4 text-green-600">{message}</p>}
+        {message && (
+          <div style={{
+            marginTop: '1.5rem',
+            padding: '1rem',
+            borderRadius: '0.5rem',
+            backgroundColor: message.includes('Error') ? 'var(--error-light)' : 'var(--success-light)',
+            color: message.includes('Error') ? 'var(--error-dark)' : 'var(--success-dark)',
+            borderLeft: `4px solid ${message.includes('Error') ? 'var(--error)' : 'var(--success)'}`,
+          }}>
+            {message}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

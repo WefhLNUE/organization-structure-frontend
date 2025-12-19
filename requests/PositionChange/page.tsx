@@ -56,69 +56,166 @@ export default function MakeChangeRequestPage() {
     }
   };
 
+  const inputStyle = {
+    width: '100%',
+    padding: '0.625rem 0.875rem',
+    border: '1px solid var(--border-medium)',
+    borderRadius: '0.5rem',
+    fontSize: '0.875rem',
+    color: 'var(--text-primary)',
+    backgroundColor: 'var(--bg-primary)',
+    transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+  };
+
   return (
-    <div className="p-8 max-w-3xl">
-      <h1 className="text-2xl font-semibold mb-6">
-        Position Change Request
-      </h1>
-
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-3 items-center gap-4">
-          <label className="font-medium text-gray-700">New Position ID</label>
-          <input
-            type="text"
-            value={newPositionId}
-            onChange={(e) => setNewPositionId(e.target.value)}
-            className="col-span-2 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        <div className="grid grid-cols-3 items-center gap-4">
-          <label className="font-medium text-gray-700">Employee ID</label>
-          <input
-            type="text"
-            value={employeeId}
-            onChange={(e) => setEmployeeId(e.target.value)}
-            className="col-span-2 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        <div className="grid grid-cols-3 items-start gap-4">
-          <label className="font-medium text-gray-700 mt-2">Details</label>
-          <textarea
-            value={details}
-            onChange={(e) => setDetails(e.target.value)}
-            className="col-span-2 border rounded-md px-3 py-2 h-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        <div className="grid grid-cols-3 items-start gap-4">
-          <label className="font-medium text-gray-700 mt-2">Reason</label>
-          <textarea
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            className="col-span-2 border rounded-md px-3 py-2 h-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="btn-primary mt-4 disabled:opacity-50"
-        >
-          {loading ? "Submitting..." : "Submit Request"}
-        </button>
-      </form>
-
-      {message && (
-        <p className="mt-4 text-sm text-gray-700">
-          {message}
+    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ marginBottom: '2rem' }}>
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--org-structure)', marginBottom: '0.5rem' }}>
+          Position Change Request
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
+          Request a change to an employee's position
         </p>
-      )}
+      </div>
+
+      <div style={{
+        backgroundColor: 'var(--bg-primary)',
+        border: '1px solid var(--border-light)',
+        borderRadius: '0.75rem',
+        padding: '2rem',
+        boxShadow: 'var(--shadow-sm)',
+      }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div>
+            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+              New Position ID *
+            </label>
+            <input
+              type="text"
+              value={newPositionId}
+              onChange={(e) => setNewPositionId(e.target.value)}
+              required
+              style={inputStyle}
+              onFocus={(e) => {
+                e.target.style.outline = 'none';
+                e.target.style.borderColor = 'var(--border-focus)';
+                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-medium)';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+          </div>
+
+          <div>
+            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+              Employee ID *
+            </label>
+            <input
+              type="text"
+              value={employeeId}
+              onChange={(e) => setEmployeeId(e.target.value)}
+              required
+              style={inputStyle}
+              onFocus={(e) => {
+                e.target.style.outline = 'none';
+                e.target.style.borderColor = 'var(--border-focus)';
+                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-medium)';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+          </div>
+
+          <div>
+            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+              Details *
+            </label>
+            <textarea
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+              required
+              rows={4}
+              style={{ ...inputStyle, fontFamily: 'inherit', resize: 'vertical' }}
+              onFocus={(e) => {
+                e.target.style.outline = 'none';
+                e.target.style.borderColor = 'var(--border-focus)';
+                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-medium)';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+          </div>
+
+          <div>
+            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+              Reason *
+            </label>
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              required
+              rows={4}
+              style={{ ...inputStyle, fontFamily: 'inherit', resize: 'vertical' }}
+              onFocus={(e) => {
+                e.target.style.outline = 'none';
+                e.target.style.borderColor = 'var(--border-focus)';
+                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-medium)';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              backgroundColor: 'var(--org-structure)',
+              color: 'var(--text-inverse)',
+              border: 'none',
+              padding: '0.625rem 1.25rem',
+              borderRadius: '0.5rem',
+              fontWeight: '500',
+              transition: 'all 0.2s ease',
+              boxShadow: 'var(--shadow-sm)',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.5 : 1,
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            {loading ? "Submitting..." : "Submit Request"}
+          </button>
+        </form>
+
+        {message && (
+          <div style={{
+            marginTop: '1.5rem',
+            padding: '1rem',
+            borderRadius: '0.5rem',
+            backgroundColor: message.includes('Error') ? 'var(--error-light)' : 'var(--success-light)',
+            color: message.includes('Error') ? 'var(--error-dark)' : 'var(--success-dark)',
+            borderLeft: `4px solid ${message.includes('Error') ? 'var(--error)' : 'var(--success)'}`,
+          }}>
+            {message}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

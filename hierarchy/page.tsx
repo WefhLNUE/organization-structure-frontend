@@ -68,82 +68,133 @@ export default function ViewHierarchyPage() {
   }, []);
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-semibold mb-6">View Hierarchy</h1>
+    <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto' }}>
+      <div style={{ marginBottom: '2rem' }}>
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--org-structure)', marginBottom: '0.5rem' }}>
+          Organization Hierarchy
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
+          Explore the complete organizational hierarchy and team structure
+        </p>
+      </div>
 
-      {loading && <p className="mb-4">Loading...</p>}
-      {message && <p className="mb-4 text-red-600">{message}</p>}
+      {loading && (
+        <div style={{
+          padding: '2rem',
+          textAlign: 'center',
+          color: 'var(--text-secondary)',
+        }}>
+          Loading...
+        </div>
+      )}
+
+      {message && (
+        <div style={{
+          padding: '1rem',
+          marginBottom: '1.5rem',
+          borderRadius: '0.5rem',
+          backgroundColor: 'var(--error-light)',
+          color: 'var(--error-dark)',
+          borderLeft: '4px solid var(--error)',
+        }}>
+          {message}
+        </div>
+      )}
 
       {hierarchy && (
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Employee Hierarchy</h2>
-          <table className="w-full border-collapse border border-gray-300 mb-6">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2">Name</th>
-                <th className="border border-gray-300 px-4 py-2">Position</th>
-                <th className="border border-gray-300 px-4 py-2">
-                  Department
-                </th>
-                <th className="border border-gray-300 px-4 py-2">Manager</th>
-                <th className="border border-gray-300 px-4 py-2">
-                  Manager&apos;s Manager
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="border border-gray-300 px-4 py-2">
-                  {hierarchy.employeeHierarchy.name}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {hierarchy.employeeHierarchy.position || "N/A"}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {hierarchy.employeeHierarchy.department || "N/A"}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {hierarchy.employeeHierarchy.manager?.name || "N/A"}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {hierarchy.employeeHierarchy.managerManager?.name || "N/A"}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          {hierarchy.teamStructure.length > 0 && (
-            <>
-              <h2 className="text-xl font-semibold mb-4">Team Structure</h2>
-              <table className="w-full border-collapse border border-gray-300">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          {/* Employee Hierarchy */}
+          <div style={{
+            backgroundColor: 'var(--bg-primary)',
+            border: '1px solid var(--border-light)',
+            borderRadius: '0.75rem',
+            padding: '1.5rem',
+            boxShadow: 'var(--shadow-sm)',
+          }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem', color: 'var(--text-primary)' }}>
+              Employee Hierarchy
+            </h2>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="table" style={{
+                width: '100%',
+                backgroundColor: 'var(--bg-primary)',
+                borderCollapse: 'collapse',
+              }}>
                 <thead>
-                  <tr className="bg-gray-100">
-                    <th className="border border-gray-300 px-4 py-2">Name</th>
-                    <th className="border border-gray-300 px-4 py-2">
-                      Position
-                    </th>
-                    <th className="border border-gray-300 px-4 py-2">
-                      Department
-                    </th>
+                  <tr style={{ backgroundColor: 'var(--gray-50)', borderBottom: '2px solid var(--border-medium)' }}>
+                    <th style={{ color: 'var(--text-secondary)', fontWeight: '600', padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Name</th>
+                    <th style={{ color: 'var(--text-secondary)', fontWeight: '600', padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Position</th>
+                    <th style={{ color: 'var(--text-secondary)', fontWeight: '600', padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Department</th>
+                    <th style={{ color: 'var(--text-secondary)', fontWeight: '600', padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Manager</th>
+                    <th style={{ color: 'var(--text-secondary)', fontWeight: '600', padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Manager&apos;s Manager</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {hierarchy.teamStructure.map((member) => (
-                    <tr key={member.id}>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {member.name}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {member.position || "N/A"}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {member.department || "N/A"}
-                      </td>
-                    </tr>
-                  ))}
+                  <tr style={{ borderBottom: '1px solid var(--border-light)' }}>
+                    <td style={{ padding: '1rem', color: 'var(--text-primary)' }}>
+                      {hierarchy.employeeHierarchy.name}
+                    </td>
+                    <td style={{ padding: '1rem', color: 'var(--text-primary)' }}>
+                      {hierarchy.employeeHierarchy.position || "N/A"}
+                    </td>
+                    <td style={{ padding: '1rem', color: 'var(--text-primary)' }}>
+                      {hierarchy.employeeHierarchy.department || "N/A"}
+                    </td>
+                    <td style={{ padding: '1rem', color: 'var(--text-primary)' }}>
+                      {hierarchy.employeeHierarchy.manager?.name || "N/A"}
+                    </td>
+                    <td style={{ padding: '1rem', color: 'var(--text-primary)' }}>
+                      {hierarchy.employeeHierarchy.managerManager?.name || "N/A"}
+                    </td>
+                  </tr>
                 </tbody>
               </table>
-            </>
+            </div>
+          </div>
+
+          {/* Team Structure */}
+          {hierarchy.teamStructure.length > 0 && (
+            <div style={{
+              backgroundColor: 'var(--bg-primary)',
+              border: '1px solid var(--border-light)',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              boxShadow: 'var(--shadow-sm)',
+            }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem', color: 'var(--text-primary)' }}>
+                Team Structure
+              </h2>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="table" style={{
+                  width: '100%',
+                  backgroundColor: 'var(--bg-primary)',
+                  borderCollapse: 'collapse',
+                }}>
+                  <thead>
+                    <tr style={{ backgroundColor: 'var(--gray-50)', borderBottom: '2px solid var(--border-medium)' }}>
+                      <th style={{ color: 'var(--text-secondary)', fontWeight: '600', padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Name</th>
+                      <th style={{ color: 'var(--text-secondary)', fontWeight: '600', padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Position</th>
+                      <th style={{ color: 'var(--text-secondary)', fontWeight: '600', padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Department</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {hierarchy.teamStructure.map((member) => (
+                      <tr key={member.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
+                        <td style={{ padding: '1rem', color: 'var(--text-primary)' }}>
+                          {member.name}
+                        </td>
+                        <td style={{ padding: '1rem', color: 'var(--text-primary)' }}>
+                          {member.position || "N/A"}
+                        </td>
+                        <td style={{ padding: '1rem', color: 'var(--text-primary)' }}>
+                          {member.department || "N/A"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           )}
         </div>
       )}
