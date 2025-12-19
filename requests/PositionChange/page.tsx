@@ -1,14 +1,155 @@
 "use client";
 
-import React, { useState } from "react";
+import { jwtDecode } from "jwt-decode";
+import React, { useEffect, useState } from "react";
+
+type Position = {
+  _id: string;
+  code: string;
+  title: string;
+};
+
+type Employee = {
+  _id: string;
+};
 
 export default function MakeChangeRequestPage() {
+  const [positions, setPositions] = useState<Position[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [newPositionId, setNewPositionId] = useState("");
   const [employeeId, setEmployeeId] = useState("");
   const [details, setDetails] = useState("");
   const [reason, setReason] = useState("");
   const [message, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setMessage("No authentication token found. Please log in again.");
+          return;
+        }
+
+        const res = await fetch("http://localhost:3000/employee-profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("Employee response status:", res.status, res.statusText);
+
+        if (res.ok) {
+          try {
+            const data = await res.json();
+            console.log("Employee data received:", data);
+
+            // Handle different response formats
+            let employeesArray: any[] = [];
+            if (Array.isArray(data)) {
+              employeesArray = data;
+            } else if (data && Array.isArray(data.data)) {
+              employeesArray = data.data;
+            } else if (data && Array.isArray(data.employees)) {
+              employeesArray = data.employees;
+            }
+
+            console.log("employees array length:", employeesArray.length);
+
+            const normalizedEmployees = employeesArray.map((emp: any) => ({
+              _id: emp._id || emp.id,
+            }));
+
+            setEmployees(normalizedEmployees);
+            console.log("Normalized employees set:", normalizedEmployees.length);
+          } catch (parseError) {
+            console.error("Error parsing employees JSON:", parseError);
+            setMessage("Failed to parse employees data");
+          }
+        } else {
+          try {
+            const errorText = await res.text();
+            console.error("Error fetching employees:", res.status, errorText);
+            setMessage(`Failed to fetch employees (${res.status}): ${errorText}`);
+          } catch (error) {
+            console.error("Error reading error response:", error);
+            setMessage(`Failed to fetch employees (${res.status})`);
+          }
+        }
+      } catch (err) {
+        console.error("Network error while fetching employees:", err);
+        setMessage("Network error while fetching employees. Check console for details.");
+      }
+    };
+
+    fetchEmployees();
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setMessage("No authentication token found. Please log in again.");
+      return;
+    }
+
+    const fetchPositions = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/organization-structure/positions", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("Positions response status:", res.status, res.statusText);
+
+        if (res.ok) {
+          try {
+            const data = await res.json();
+            console.log("Positions data received:", data);
+
+            // Handle different response formats
+            let positionsArray: any[] = [];
+            if (Array.isArray(data)) {
+              positionsArray = data;
+            } else if (data && Array.isArray(data.data)) {
+              positionsArray = data.data;
+            } else if (data && Array.isArray(data.positions)) {
+              positionsArray = data.positions;
+            }
+
+            console.log("Positions array length:", positionsArray.length);
+
+            const normalizedPositions = positionsArray.map((pos: any) => ({
+              _id: pos._id || pos.id,
+              code: pos.code || '',
+              title: pos.title || '',
+            }));
+
+            setPositions(normalizedPositions);
+            console.log("Normalized positions set:", normalizedPositions.length);
+          } catch (parseError) {
+            console.error("Error parsing positions JSON:", parseError);
+            setMessage("Failed to parse positions data");
+          }
+        } else {
+          try {
+            const errorText = await res.text();
+            console.error("Error fetching positions:", res.status, errorText);
+            setMessage(`Failed to fetch positions (${res.status}): ${errorText}`);
+          } catch (error) {
+            console.error("Error reading error response:", error);
+            setMessage(`Failed to fetch positions (${res.status})`);
+          }
+        }
+      } catch (err) {
+        console.error("Network error while fetching positions:", err);
+        setMessage("Network error while fetching positions. Check console for details.");
+      }
+    };
+
+    fetchPositions();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,10 +229,9 @@ export default function MakeChangeRequestPage() {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div>
             <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
-              New Position ID *
+              Select Position *
             </label>
-            <input
-              type="text"
+            <select
               value={newPositionId}
               onChange={(e) => setNewPositionId(e.target.value)}
               required
@@ -105,9 +245,65 @@ export default function MakeChangeRequestPage() {
                 e.target.style.borderColor = 'var(--border-medium)';
                 e.target.style.boxShadow = 'none';
               }}
-            />
+            >
+              <option value="">-- Select a Position --</option>
+              {positions.length > 0 ? (
+                positions.map((pos) => (
+                  <option key={pos._id} value={pos._id}>
+                    {pos.title} ({pos.code})
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  {message && (message.includes('Error') || message.includes('Failed')) ? "Error loading positions - see message below" : "No positions available"}
+                </option>
+              )}
+            </select>
+            {positions.length > 0 && (
+              <p style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+                {positions.length} position{positions.length !== 1 ? 's' : ''} found
+              </p>
+            )}
           </div>
 
+          <div>
+            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+              Select Employee *
+            </label>
+            <select
+              value={employeeId}
+              onChange={(e) => setEmployeeId(e.target.value)}
+              required
+              style={inputStyle}
+              onFocus={(e) => {
+                e.target.style.outline = 'none';
+                e.target.style.borderColor = 'var(--border-focus)';
+                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-medium)';
+                e.target.style.boxShadow = 'none';
+              }}
+            >
+              <option value="">-- Select an Employee --</option>
+              {employees.length > 0 ? (
+                employees.map((emp) => (
+                  <option key={emp._id} value={emp._id}>
+                    {/* {pos.title} ({pos.code}) */}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  {message && (message.includes('Error') || message.includes('Failed')) ? "Error loading employees - see message below" : "No employees available"}
+                </option>
+              )}
+            </select>
+            {employees.length > 0 && (
+              <p style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+                {employees.length} position{employees.length !== 1 ? 's' : ''} found
+              </p>
+            )}
+          </div>
           <div>
             <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
               Employee ID *

@@ -1,6 +1,8 @@
 "use client";
 
+import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
+import { json } from "stream/consumers";
 
 interface EmployeeHierarchy {
   id: string;
@@ -41,8 +43,15 @@ export default function ViewHierarchyPage() {
           return;
         }
 
+        const decoded = jwtDecode(token) as {id : null | string};
+
+        if (!decoded.id) {
+          setMessage("User ID not found in token.");
+          return;
+        }
+
         const response = await fetch(
-          "http://localhost:3000/organization-structure/hierarchy",
+          `http://localhost:3000/organization-structure/hierarchy/${decoded.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

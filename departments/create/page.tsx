@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function CreateDepartmentPage() {
   const [formData, setFormData] = useState({
@@ -176,7 +176,7 @@ export default function CreateDepartmentPage() {
             />
           </div>
 
-          <div>
+          {/* <div>
             <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
               Head Position ID
             </label>
@@ -206,7 +206,7 @@ export default function CreateDepartmentPage() {
                 e.target.style.boxShadow = 'none';
               }}
             />
-          </div>
+          </div> */}
 
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <input
