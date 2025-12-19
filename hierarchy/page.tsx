@@ -42,7 +42,7 @@ export default function ViewHierarchyPage() {
         }
 
         const response = await fetch(
-          "http://localhost:3000/organization-structure/hierarchy",
+          "http://localhost:5000/organization-structure/hierarchy",
           {
             headers: {
               Authorization: `Bearer ${token}`,

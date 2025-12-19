@@ -23,7 +23,7 @@ export default function MakeChangeRequestPage() {
       }
 
       const response = await fetch(
-        "http://localhost:3000/organization-structure/change-request/position",
+        "http://localhost:5000/organization-structure/change-request/position",
         {
           method: "POST",
           headers: {
