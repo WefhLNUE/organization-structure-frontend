@@ -7,7 +7,6 @@ export default function CreateDepartmentPage() {
     code: '',
     name: '',
     description: '',
-    headPositionId: '',
     isActive: true,
   });
   const [loading, setLoading] = useState(false);
@@ -27,7 +26,7 @@ export default function CreateDepartmentPage() {
     setMessage('');
 
     try {
-      const token = localStorage.getItem('accessToken'); // Assuming token is stored
+      const token = localStorage.getItem('token'); // Assuming token is stored
       const response = await fetch('http://localhost:5000/organization-structure/departments', {
         method: 'POST',
         headers: {
@@ -43,7 +42,6 @@ export default function CreateDepartmentPage() {
           code: '',
           name: '',
           description: '',
-          headPositionId: '',
           isActive: true,
         });
       } else {
@@ -175,38 +173,6 @@ export default function CreateDepartmentPage() {
               }}
             />
           </div>
-
-          {/* <div>
-            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
-              Head Position ID
-            </label>
-            <input
-              type="text"
-              name="headPositionId"
-              value={formData.headPositionId}
-              onChange={handleChange}
-              className="form-input"
-              style={{
-                width: '100%',
-                padding: '0.625rem 0.875rem',
-                border: '1px solid var(--border-medium)',
-                borderRadius: '0.5rem',
-                fontSize: '0.875rem',
-                color: 'var(--text-primary)',
-                backgroundColor: 'var(--bg-primary)',
-                transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-              }}
-              onFocus={(e) => {
-                e.target.style.outline = 'none';
-                e.target.style.borderColor = 'var(--border-focus)';
-                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = 'var(--border-medium)';
-                e.target.style.boxShadow = 'none';
-              }}
-            />
-          </div> */}
 
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <input

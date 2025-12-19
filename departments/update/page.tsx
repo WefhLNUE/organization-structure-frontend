@@ -29,7 +29,7 @@ export default function UpdateDepartmentPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const token = localStorage.getItem('accessToken');
+        const token = localStorage.getItem('token');
         console.log("TOKEN FROM STORAGE:", token);
 
         if (!token) {
@@ -148,7 +148,7 @@ export default function UpdateDepartmentPage() {
         isActive: formData.isActive ?? true,
       };
 
-      const token = localStorage.getItem('accessToken');
+      const token = localStorage.getItem('token');
       if (!token) {
         setMessage({ type: "error", text: "Authentication required. Please log in." });
         setLoading(false);
