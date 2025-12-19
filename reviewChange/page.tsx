@@ -46,7 +46,7 @@ export default function ReviewChangeRequestPage() {
       }
 
       const response = await fetch(
-        "http://localhost:5000/organization-structure/change-request",
+        `http://localhost:5000/organization-structure/change-request`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -106,7 +106,7 @@ export default function ReviewChangeRequestPage() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ status: selectedStatus }),
+          body: JSON.stringify({ approve: true}),
         }
       );
 
@@ -197,7 +197,6 @@ export default function ReviewChangeRequestPage() {
                 <th style={{ color: 'var(--text-secondary)', fontWeight: '600', padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Details</th>
                 <th style={{ color: 'var(--text-secondary)', fontWeight: '600', padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Reason</th>
                 <th style={{ color: 'var(--text-secondary)', fontWeight: '600', padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</th>
-                <th style={{ color: 'var(--text-secondary)', fontWeight: '600', padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>New Status</th>
                 <th style={{ color: 'var(--text-secondary)', fontWeight: '600', padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Action</th>
               </tr>
             </thead>
@@ -234,29 +233,6 @@ export default function ReviewChangeRequestPage() {
                       </span>
                     </td>
                     <td style={{ padding: '1rem' }}>
-                      <select
-                        style={{
-                          padding: '0.5rem',
-                          border: '1px solid var(--border-medium)',
-                          borderRadius: '0.5rem',
-                          fontSize: '0.875rem',
-                          backgroundColor: 'var(--bg-primary)',
-                          color: 'var(--text-primary)',
-                          cursor: 'pointer',
-                        }}
-                        value={statusSelection[req._id] || req.status}
-                        onChange={(e) =>
-                          handleStatusChange(req._id, e.target.value)
-                        }
-                      >
-                        {STATUS_OPTIONS.map((status) => (
-                          <option key={status} value={status}>
-                            {status}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td style={{ padding: '1rem' }}>
                       <button
                         onClick={() => handleReview(req._id)}
                         disabled={savingId === req._id}
@@ -278,7 +254,7 @@ export default function ReviewChangeRequestPage() {
                           }
                         }}
                       >
-                        {savingId === req._id ? "Saving..." : "Save"}
+                        {savingId === req._id ? "Loading..." : "Approve"}
                       </button>
                     </td>
                   </tr>
