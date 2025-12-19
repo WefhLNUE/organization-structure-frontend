@@ -38,12 +38,12 @@ export default function UpdateDepartmentPage() {
         }
 
         const [deptRes, posRes] = await Promise.all([
-          fetch("http://localhost:3000/organization-structure/departments", {
+          fetch("http://localhost:5000/organization-structure/departments", {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
           }),
-          fetch("http://localhost:3000/organization-structure/positions", {
+          fetch("http://localhost:5000/organization-structure/positions", {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
@@ -155,7 +155,7 @@ export default function UpdateDepartmentPage() {
         return;
       }
 
-      const res = await fetch(`http://localhost:3000/organization-structure/departments/${selectedId}`, {
+      const res = await fetch(`http://localhost:5000/organization-structure/departments/${selectedId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
