@@ -11,8 +11,12 @@ type Position = {
 
 type Employee = {
   _id: string;
+  firstName: string;
+  primaryPositionId: {
+    _id: string;
+    code: string;
+  }
 };
-
 export default function MakeChangeRequestPage() {
   const [positions, setPositions] = useState<Position[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -21,7 +25,7 @@ export default function MakeChangeRequestPage() {
   const [details, setDetails] = useState("");
   const [reason, setReason] = useState("");
   const [message, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -61,7 +65,7 @@ export default function MakeChangeRequestPage() {
               _id: emp._id || emp.id,
             }));
 
-            setEmployees(normalizedEmployees);
+            setEmployees(employeesArray);
             console.log("Normalized employees set:", normalizedEmployees.length);
           } catch (parseError) {
             console.error("Error parsing employees JSON:", parseError);
@@ -289,6 +293,7 @@ export default function MakeChangeRequestPage() {
               {employees.length > 0 ? (
                 employees.map((emp) => (
                   <option key={emp._id} value={emp._id}>
+                    {emp.firstName} - {emp.primaryPositionId ? emp.primaryPositionId.code : 'No Position'}
                     {/* {pos.title} ({pos.code}) */}
                   </option>
                 ))
@@ -304,28 +309,7 @@ export default function MakeChangeRequestPage() {
               </p>
             )}
           </div>
-          <div>
-            <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
-              Employee ID *
-            </label>
-            <input
-              type="text"
-              value={employeeId}
-              onChange={(e) => setEmployeeId(e.target.value)}
-              required
-              style={inputStyle}
-              onFocus={(e) => {
-                e.target.style.outline = 'none';
-                e.target.style.borderColor = 'var(--border-focus)';
-                e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = 'var(--border-medium)';
-                e.target.style.boxShadow = 'none';
-              }}
-            />
-          </div>
-
+          
           <div>
             <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
               Details *

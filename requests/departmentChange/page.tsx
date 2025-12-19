@@ -1,14 +1,153 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+type Employee = {
+  _id: string;
+  firstName: string;
+  primaryPositionId: {
+    _id: string;
+    code: string;
+  }
+};
+
+type Department = {
+  _id: string;
+  code: string;
+  name: string;
+  description?: string;
+  headPositionId?: string;
+  isActive: boolean;
+};
 
 export default function CreateDepartmentChangeRequestPage() {
   const [newDepartmentId, setNewDepartmentId] = useState("");
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [employeeId, setEmployeeId] = useState("");
   const [details, setDetails] = useState("");
   const [reason, setReason] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setMessage("No authentication token found. Please log in again.");
+          return;
+        }
+
+        const res = await fetch("http://localhost:5000/employee-profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("Employee response status:", res.status, res.statusText);
+
+        if (res.ok) {
+          try {
+            const data = await res.json();
+            console.log("Employee data received:", data);
+
+            // Handle different response formats
+            let employeesArray: any[] = [];
+            if (Array.isArray(data)) {
+              employeesArray = data;
+            } else if (data && Array.isArray(data.data)) {
+              employeesArray = data.data;
+            } else if (data && Array.isArray(data.employees)) {
+              employeesArray = data.employees;
+            }
+
+            console.log("employees array length:", employeesArray.length);
+
+            const normalizedEmployees = employeesArray.map((emp: any) => ({
+              _id: emp._id || emp.id,
+            }));
+
+            setEmployees(employeesArray);
+            console.log("Normalized employees set:", normalizedEmployees.length);
+          } catch (parseError) {
+            console.error("Error parsing employees JSON:", parseError);
+            setMessage("Failed to parse employees data");
+          }
+        } else {
+          try {
+            const errorText = await res.text();
+            console.error("Error fetching employees:", res.status, errorText);
+            setMessage(`Failed to fetch employees (${res.status}): ${errorText}`);
+          } catch (error) {
+            console.error("Error reading error response:", error);
+            setMessage(`Failed to fetch employees (${res.status})`);
+          }
+        }
+      } catch (err) {
+        console.error("Network error while fetching employees:", err);
+        setMessage("Network error while fetching employees. Check console for details.");
+      }
+    };
+
+    fetchEmployees();
+  }, []);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const token = localStorage.getItem('token');
+        console.log("TOKEN FROM STORAGE:", token);
+
+        if (!token) {
+          setMessage("Authentication required. Please log in.");
+          return;
+        }
+
+        const [deptRes, posRes] = await Promise.all([
+          fetch("http://localhost:5000/organization-structure/departments", {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          }),
+          fetch("http://localhost:5000/organization-structure/positions", {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          }),
+        ]);
+
+        if (deptRes.ok) {
+          try {
+            const deptData = await deptRes.json();
+            const normalizedDepartments = Array.isArray(deptData) ? deptData.map((dept: any) => ({
+              ...dept,
+              headPositionId: typeof dept.headPositionId === 'object' && dept.headPositionId?._id
+                ? dept.headPositionId._id
+                : dept.headPositionId,
+            })) : [];
+            setDepartments(normalizedDepartments);
+          } catch (parseError) {
+            console.error("Error parsing departments JSON:", parseError);
+            setMessage("Failed to parse departments data");
+          }
+        } else {
+          try {
+            const errorText = await deptRes.text();
+            setMessage(`Failed to load departments (${deptRes.status}): ${errorText}`);
+          } catch (error) {
+            setMessage(`Failed to load departments (${deptRes.status})`);
+          }
+        }
+
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setMessage("Failed to load departments and positions");
+      }
+    }
+
+    fetchData();
+  }, []);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,10 +227,9 @@ export default function CreateDepartmentChangeRequestPage() {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div>
             <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
-              New Department ID *
+              Select Department*
             </label>
-            <input
-              type="text"
+            <select
               value={newDepartmentId}
               onChange={(e) => setNewDepartmentId(e.target.value)}
               required
@@ -105,15 +243,32 @@ export default function CreateDepartmentChangeRequestPage() {
                 e.target.style.borderColor = 'var(--border-medium)';
                 e.target.style.boxShadow = 'none';
               }}
-            />
+            >
+              <option value="">-- Select a Department --</option>
+              {departments.length > 0 ? (
+                departments.map((dept) => (
+                  <option key={dept._id} value={dept._id}>
+                    {dept.name} ({dept.code})
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  {message && (message.includes('Error') || message.includes('Failed')) ? "Error loading positions - see message below" : "No positions available"}
+                </option>
+              )}
+            </select>
+            {departments.length > 0 && (
+              <p style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+                {departments.length} department{departments.length !== 1 ? 's' : ''} found
+              </p>
+            )}
           </div>
 
           <div>
             <label className="form-label" style={{ display: 'block', color: 'var(--text-secondary)', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
-              Employee ID *
+              Select Employee *
             </label>
-            <input
-              type="text"
+            <select
               value={employeeId}
               onChange={(e) => setEmployeeId(e.target.value)}
               required
@@ -127,7 +282,26 @@ export default function CreateDepartmentChangeRequestPage() {
                 e.target.style.borderColor = 'var(--border-medium)';
                 e.target.style.boxShadow = 'none';
               }}
-            />
+            >
+              <option value="">-- Select an Employee --</option>
+              {employees.length > 0 ? (
+                employees.map((emp) => (
+                  <option key={emp._id} value={emp._id}>
+                    {emp.firstName} - {emp.primaryPositionId ? emp.primaryPositionId.code : 'No Position'}
+                    {/* {pos.title} ({pos.code}) */}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  {message && (message.includes('Error') || message.includes('Failed')) ? "Error loading employees - see message below" : "No employees available"}
+                </option>
+              )}
+            </select>
+            {employees.length > 0 && (
+              <p style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+                {employees.length} position{employees.length !== 1 ? 's' : ''} found
+              </p>
+            )}
           </div>
 
           <div>
