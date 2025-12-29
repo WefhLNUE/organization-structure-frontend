@@ -2,6 +2,7 @@
 
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
+import { API_URL } from '@/lib/config';
 
 type Position = {
   _id: string;
@@ -36,7 +37,7 @@ export default function MakeChangeRequestPage() {
           return;
         }
 
-        const res = await fetch("http://localhost:5000/employee-profile", {
+        const res = await fetch(`${API_URL}/employee-profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -99,7 +100,7 @@ export default function MakeChangeRequestPage() {
 
     const fetchPositions = async () => {
       try {
-        const res = await fetch("http://localhost:5000/organization-structure/positions", {
+        const res = await fetch(`${API_URL}/organization-structure/positions`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -168,7 +169,7 @@ export default function MakeChangeRequestPage() {
       }
 
       const response = await fetch(
-        "http://localhost:5000/organization-structure/change-request/position",
+        `${API_URL}/organization-structure/change-request/position`,
         {
           method: "POST",
           headers: {

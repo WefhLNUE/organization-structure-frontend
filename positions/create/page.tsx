@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '@/lib/config';
 
 type Department = {
   _id: string;
@@ -35,10 +36,10 @@ export default function CreatePositionPage() {
         if (!token) return;
 
         const [deptRes, posRes] = await Promise.all([
-          fetch("http://localhost:5000/organization-structure/departments", {
+          fetch(`${API_URL}/organization-structure/departments`, {
             headers: { 'Authorization': `Bearer ${token}` },
           }),
-          fetch("http://localhost:5000/organization-structure/positions", {
+          fetch(`${API_URL}/organization-structure/positions`, {
             headers: { 'Authorization': `Bearer ${token}` },
           }),
         ]);
@@ -105,7 +106,7 @@ export default function CreatePositionPage() {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/organization-structure/positions', {
+      const response = await fetch(`${API_URL}/organization-structure/positions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
