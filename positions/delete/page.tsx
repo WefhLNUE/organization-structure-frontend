@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 type Position = {
   _id: string;
@@ -8,7 +10,25 @@ type Position = {
   title: string;
 };
 
+import { checkAuth, hasRole, User } from '@/lib/auth';
+
 export default function DeletePositionPage() {
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await checkAuth();
+      if (!userData || !hasRole(userData, 'System Admin')) {
+        window.location.href = '/employee-profile';
+        return;
+      }
+      setUser(userData);
+      setAuthLoading(false);
+    };
+    fetchUser();
+  }, []);
+
   const [positions, setPositions] = useState<Position[]>([]);
   const [selectedId, setSelectedId] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,7 +59,7 @@ export default function DeletePositionPage() {
           try {
             const data = await res.json();
             console.log("Positions data received:", data);
-            
+
             // Handle different response formats
             let positionsArray: any[] = [];
             if (Array.isArray(data)) {
@@ -49,15 +69,15 @@ export default function DeletePositionPage() {
             } else if (data && Array.isArray(data.positions)) {
               positionsArray = data.positions;
             }
-            
+
             console.log("Positions array length:", positionsArray.length);
-            
+
             const normalizedPositions = positionsArray.map((pos: any) => ({
               _id: pos._id || pos.id,
               code: pos.code || '',
               title: pos.title || '',
             }));
-            
+
             setPositions(normalizedPositions);
             console.log("Normalized positions set:", normalizedPositions.length);
           } catch (parseError) {
@@ -140,9 +160,45 @@ export default function DeletePositionPage() {
     transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
   };
 
+  if (authLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#F7FAFC',
+        fontFamily: "'Inter', sans-serif"
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            border: '4px solid #E2E8F0',
+            borderTop: '4px solid #6B46C1',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 1rem auto'
+          }} />
+          <p style={{ color: '#718096', fontWeight: '500' }}>Verifying access...</p>
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
       <div style={{ marginBottom: '2rem' }}>
+        <Link href="/organization-structure" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', textDecoration: 'none', marginBottom: '1rem', fontSize: '0.875rem', fontWeight: 500 }}>
+          <ArrowLeft size={16} />
+          Back to Dashboard
+        </Link>
         <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--org-structure)', marginBottom: '0.5rem' }}>
           Delete Position
         </h1>

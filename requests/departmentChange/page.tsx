@@ -1,12 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { checkAuth, hasRole, User } from '@/lib/auth';
+import { CheckCircle, AlertCircle } from "lucide-react";
+
 type Employee = {
   _id: string;
   firstName: string;
-  primaryPositionId: {
+  lastName: string;
+  primaryPositionId?: {
     _id: string;
     code: string;
+    title: string;
   }
 };
 
@@ -20,6 +25,8 @@ type Department = {
 };
 
 export default function CreateDepartmentChangeRequestPage() {
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [newDepartmentId, setNewDepartmentId] = useState("");
   const [departments, setDepartments] = useState<Department[]>([]);
   const [employeeId, setEmployeeId] = useState("");
@@ -30,122 +37,66 @@ export default function CreateDepartmentChangeRequestPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
 
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchUserAndData = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setMessage("No authentication token found. Please log in again.");
+        const userData = await checkAuth();
+        if (!userData) {
+          window.location.href = '/login';
           return;
         }
+        setUser(userData);
+        setAuthLoading(false);
 
-        const res = await fetch("http://localhost:5000/employee-profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const token = localStorage.getItem("token");
+        const isAdminOrHR = hasRole(userData, 'System Admin') || hasRole(userData, 'HR Manager') || hasRole(userData, 'HR Admin');
+        const isDeptHead = hasRole(userData, 'Department Head');
+
+        // Fetch Employees
+        let empUrl = "http://localhost:5000/employee-profile/my-employees";
+        if (isAdminOrHR) {
+          empUrl = "http://localhost:5000/employee-profile/all-for-selection";
+        }
+
+        const empRes = await fetch(empUrl, {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log("Employee response status:", res.status, res.statusText);
+        let emps: any[] = [];
+        if (empRes.ok) {
+          let data = await empRes.json();
+          console.log("DEBUG: Employees raw data", data);
+          emps = Array.isArray(data) ? data : (data.data || data.employees || []);
 
-        if (res.ok) {
-          try {
-            const data = await res.json();
-            console.log("Employee data received:", data);
-
-            // Handle different response formats
-            let employeesArray: any[] = [];
-            if (Array.isArray(data)) {
-              employeesArray = data;
-            } else if (data && Array.isArray(data.data)) {
-              employeesArray = data.data;
-            } else if (data && Array.isArray(data.employees)) {
-              employeesArray = data.employees;
-            }
-
-            console.log("employees array length:", employeesArray.length);
-
-            const normalizedEmployees = employeesArray.map((emp: any) => ({
-              _id: emp._id || emp.id,
-            }));
-
-            setEmployees(employeesArray);
-            console.log("Normalized employees set:", normalizedEmployees.length);
-          } catch (parseError) {
-            console.error("Error parsing employees JSON:", parseError);
-            setMessage("Failed to parse employees data");
+          if (!isAdminOrHR && !isDeptHead) {
+            // Regular employee: only self
+            emps = emps.filter((e: any) => (e._id || e.id) === userData.id);
           }
-        } else {
-          try {
-            const errorText = await res.text();
-            console.error("Error fetching employees:", res.status, errorText);
-            setMessage(`Failed to fetch employees (${res.status}): ${errorText}`);
-          } catch (error) {
-            console.error("Error reading error response:", error);
-            setMessage(`Failed to fetch employees (${res.status})`);
-          }
+          setEmployees(emps);
         }
+
+        // Fetch Departments
+        const deptRes = await fetch("http://localhost:5000/organization-structure/departments", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (deptRes.ok) {
+          const deptData = await deptRes.json();
+          const normalizedDepartments = Array.isArray(deptData) ? deptData.map((dept: any) => ({
+            ...dept,
+            headPositionId: typeof dept.headPositionId === 'object' && dept.headPositionId?._id
+              ? dept.headPositionId._id
+              : dept.headPositionId,
+          })) : [];
+          setDepartments(normalizedDepartments);
+        }
+
       } catch (err) {
-        console.error("Network error while fetching employees:", err);
-        setMessage("Network error while fetching employees. Check console for details.");
+        console.error("Error in fetchUserAndData:", err);
+        setMessage("Error loading data");
       }
     };
 
-    fetchEmployees();
-  }, []);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const token = localStorage.getItem('token');
-        console.log("TOKEN FROM STORAGE:", token);
-
-        if (!token) {
-          setMessage("Authentication required. Please log in.");
-          return;
-        }
-
-        const [deptRes, posRes] = await Promise.all([
-          fetch("http://localhost:5000/organization-structure/departments", {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          }),
-          fetch("http://localhost:5000/organization-structure/positions", {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          }),
-        ]);
-
-        if (deptRes.ok) {
-          try {
-            const deptData = await deptRes.json();
-            const normalizedDepartments = Array.isArray(deptData) ? deptData.map((dept: any) => ({
-              ...dept,
-              headPositionId: typeof dept.headPositionId === 'object' && dept.headPositionId?._id
-                ? dept.headPositionId._id
-                : dept.headPositionId,
-            })) : [];
-            setDepartments(normalizedDepartments);
-          } catch (parseError) {
-            console.error("Error parsing departments JSON:", parseError);
-            setMessage("Failed to parse departments data");
-          }
-        } else {
-          try {
-            const errorText = await deptRes.text();
-            setMessage(`Failed to load departments (${deptRes.status}): ${errorText}`);
-          } catch (error) {
-            setMessage(`Failed to load departments (${deptRes.status})`);
-          }
-        }
-
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setMessage("Failed to load departments and positions");
-      }
-    }
-
-    fetchData();
+    fetchUserAndData();
   }, []);
 
 
@@ -179,7 +130,7 @@ export default function CreateDepartmentChangeRequestPage() {
       );
 
       if (response.ok) {
-        setMessage("Department change request submitted successfully.");
+        setMessage("Department change request submitted successfully");
         setNewDepartmentId("");
         setEmployeeId("");
         setDetails("");
@@ -205,6 +156,38 @@ export default function CreateDepartmentChangeRequestPage() {
     backgroundColor: 'var(--bg-primary)',
     transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
   };
+
+  if (authLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#F7FAFC',
+        fontFamily: "'Inter', sans-serif"
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            border: '4px solid #E2E8F0',
+            borderTop: '4px solid #6B46C1',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 1rem auto'
+          }} />
+          <p style={{ color: '#718096', fontWeight: '500' }}>Verifying access...</p>
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
@@ -287,8 +270,7 @@ export default function CreateDepartmentChangeRequestPage() {
               {employees.length > 0 ? (
                 employees.map((emp) => (
                   <option key={emp._id} value={emp._id}>
-                    {emp.firstName} - {emp.primaryPositionId ? emp.primaryPositionId.code : 'No Position'}
-                    {/* {pos.title} ({pos.code}) */}
+                    {emp.firstName} {emp.lastName} - {emp.primaryPositionId ? `${emp.primaryPositionId.title} (${emp.primaryPositionId.code})` : 'No Position'}
                   </option>
                 ))
               ) : (
@@ -378,15 +360,14 @@ export default function CreateDepartmentChangeRequestPage() {
         </form>
 
         {message && (
-          <div style={{
-            marginTop: '1.5rem',
-            padding: '1rem',
-            borderRadius: '0.5rem',
-            backgroundColor: message.includes('Error') ? 'var(--error-light)' : 'var(--success-light)',
-            color: message.includes('Error') ? 'var(--error-dark)' : 'var(--success-dark)',
-            borderLeft: `4px solid ${message.includes('Error') ? 'var(--error)' : 'var(--success)'}`,
-          }}>
+          <div className={`alert alert-${message.includes('Error') || message.includes('Failed') ? 'error' : 'success'}`} style={{ marginTop: '1.5rem' }}>
+            {message.includes('Error') || message.includes('Failed') ? (
+              <AlertCircle size={20} style={{ display: 'inline', marginRight: '0.5rem' }} />
+            ) : (
+              <CheckCircle size={20} style={{ display: 'inline', marginRight: '0.5rem' }} />
+            )}
             {message}
+            <button onClick={() => setMessage(null)} style={{ float: 'right', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem', lineHeight: 1 }}>×</button>
           </div>
         )}
       </div>
