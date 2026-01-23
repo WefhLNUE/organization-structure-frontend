@@ -1,5 +1,6 @@
 "use client";
 
+import { API_URL } from '@/lib/config';
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Send, Save, Building2, Briefcase, UserPlus, Edit, X, CheckCircle, AlertCircle } from "lucide-react";
@@ -43,9 +44,9 @@ export default function CreateRequestPage() {
 
         try {
             const [deptRes, posRes, empRes] = await Promise.all([
-                fetch('http://localhost:5000/organization-structure/departments', { headers: { Authorization: `Bearer ${token}` } }),
-                fetch('http://localhost:5000/organization-structure/positions', { headers: { Authorization: `Bearer ${token}` } }),
-                fetch('http://localhost:5000/employee-profile', { headers: { Authorization: `Bearer ${token}` } }),
+                fetch(`${API_URL}/organization-structure/departments`, { headers: { Authorization: `Bearer ${token}` } }),
+                fetch(`${API_URL}/organization-structure/positions`, { headers: { Authorization: `Bearer ${token}` } }),
+                fetch(`${API_URL}/employee-profile`, { headers: { Authorization: `Bearer ${token}` } }),
             ]);
             if (deptRes.ok) setDepartments(await deptRes.json());
             if (posRes.ok) setPositions(await posRes.json());
@@ -95,7 +96,7 @@ export default function CreateRequestPage() {
                 };
             }
 
-            const response = await fetch(`http://localhost:5000${endpoint}`, {
+            const response = await fetch(`${API_URL}${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

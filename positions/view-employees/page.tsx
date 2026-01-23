@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { checkAuth, hasRole, User } from '@/lib/auth';
+import { API_URL } from '@/lib/config';
 import { Users, Briefcase, Search, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -52,7 +53,7 @@ export default function ViewPositionEmployeesPage() {
             if (!token) return;
 
             try {
-                const res = await fetch("http://localhost:5000/organization-structure/positions", {
+                const res = await fetch(`${API_URL}/organization-structure/positions`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (res.ok) {
@@ -85,7 +86,7 @@ export default function ViewPositionEmployeesPage() {
         setLoading(true);
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch("http://localhost:5000/employee-profile", {
+            const res = await fetch(`${API_URL}/employee-profile`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 

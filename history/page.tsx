@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from 'next/link';
+import { API_URL } from '@/lib/config';
 import { ArrowLeft, RefreshCw, Filter, Building2, Briefcase, Search, Calendar, User, FileText } from 'lucide-react';
 import { checkAuth, hasRole, User as AuthUser } from "@/lib/auth";
 
@@ -49,8 +50,8 @@ export default function AssignmentHistoryPage() {
 
             // Fetch both (or optimize to fetch only active tab)
             const [deptRes, posRes] = await Promise.all([
-                fetch('http://localhost:5000/organization-structure/assignments/departments', { headers }),
-                fetch('http://localhost:5000/organization-structure/assignments/positions', { headers })
+                fetch(`${API_URL}/organization-structure/assignments/departments`, { headers }),
+                fetch(`${API_URL}/organization-structure/assignments/positions`, { headers })
             ]);
 
             if (deptRes.ok) setDeptAssignments(await deptRes.json());

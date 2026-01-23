@@ -51,9 +51,9 @@ export default function MakeChangeRequestPage() {
         const isDeptHead = hasRole(userData, 'Department Head');
 
         // Fetch Employees
-        let empUrl = "http://localhost:5000/employee-profile/my-employees";
+        let empUrl = `${API_URL}/employee-profile/my-employees`;
         if (isAdminOrHR) {
-          empUrl = "http://localhost:5000/employee-profile/all-for-selection";
+          empUrl = `${API_URL}/employee-profile/all-for-selection`;
         }
 
         const empRes = await fetch(empUrl, {
@@ -74,7 +74,7 @@ export default function MakeChangeRequestPage() {
         }
 
         // Fetch Positions
-        const posRes = await fetch("http://localhost:5000/organization-structure/positions", {
+        const posRes = await fetch(`${API_URL}/organization-structure/positions`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

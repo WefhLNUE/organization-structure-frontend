@@ -1,5 +1,6 @@
 "use client";
 
+import { API_URL } from '@/lib/config';
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, FileText, Send, XCircle, CheckCircle, AlertCircle, Clock, Filter, Briefcase, Building2 } from "lucide-react";
@@ -43,7 +44,7 @@ export default function MyRequestsPage() {
             const token = localStorage.getItem('token');
             if (!token) return;
 
-            const res = await fetch('http://localhost:5000/organization-structure/change-request/my', {
+            const res = await fetch(`${API_URL}/organization-structure/change-request/my`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -66,7 +67,7 @@ export default function MyRequestsPage() {
             if (!token) return;
 
             const endpoint = action === 'submit' ? 'submit' : 'cancel';
-            const res = await fetch(`http://localhost:5000/organization-structure/change-request/${id}/${endpoint}`, {
+            const res = await fetch(`${API_URL}/organization-structure/change-request/${id}/${endpoint}`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${token}` },
             });

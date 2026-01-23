@@ -80,7 +80,7 @@ export default function ViewHierarchyPage() {
 
       if (shouldSeeFullTree && !targetId) {
         const response = await fetch(
-          `http://localhost:5000/organization-structure/full-tree`,
+          `${API_URL}/organization-structure/full-tree`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -185,7 +185,7 @@ export default function ViewHierarchyPage() {
       if (!token) return;
 
       const response = await fetch(
-        `http://localhost:5000/organization-structure/hierarchy/assign-supervisor`,
+        `${API_URL}/organization-structure/hierarchy/assign-supervisor`,
         {
           method: "PATCH",
           headers: {
