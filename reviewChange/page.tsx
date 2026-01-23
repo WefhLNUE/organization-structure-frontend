@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { API_URL } from '@/lib/config';
 import { useRouter } from "next/navigation";
 import { CheckCircle, AlertCircle, ChevronLeft, FileText, Filter, XCircle, Clock, Play, Briefcase } from "lucide-react";
 
@@ -50,7 +51,7 @@ export default function ReviewChangeRequestPage() {
       }
 
       const response = await fetch(
-        `http://localhost:5000/organization-structure/change-request`,
+        `${API_URL}/organization-structure/change-request`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -97,7 +98,7 @@ export default function ReviewChangeRequestPage() {
       }
 
       const response = await fetch(
-        `http://localhost:5000/organization-structure/change-request/${reqNumber}/review`,
+        `${API_URL}/organization-structure/change-request/${id}/review`,
         {
           method: "POST",
           headers: {

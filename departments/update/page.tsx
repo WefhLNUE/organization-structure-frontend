@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from 'next/link';
 import { ArrowLeft, Filter, Building2, X } from 'lucide-react';
+import { API_URL } from '@/lib/config';
 
 type Department = {
   _id: string;
@@ -63,12 +64,12 @@ export default function UpdateDepartmentPage() {
         }
 
         const [deptRes, posRes] = await Promise.all([
-          fetch("http://localhost:5000/organization-structure/departments-all", {
+          fetch(`${API_URL}/organization-structure/departments`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
           }),
-          fetch("http://localhost:5000/organization-structure/positions", {
+          fetch(`${API_URL}/organization-structure/positions`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
@@ -180,7 +181,7 @@ export default function UpdateDepartmentPage() {
         return;
       }
 
-      const res = await fetch(`http://localhost:5000/organization-structure/departments/${selectedId}`, {
+      const res = await fetch(`${API_URL}/organization-structure/departments/${selectedId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

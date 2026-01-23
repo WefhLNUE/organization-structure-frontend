@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { API_URL } from '@/lib/config';
 import { checkAuth, hasRole, User } from '@/lib/auth';
 import { CheckCircle, AlertCircle } from "lucide-react";
 
@@ -131,7 +132,7 @@ export default function MakeChangeRequestPage() {
       }
 
       const response = await fetch(
-        "http://localhost:5000/organization-structure/change-request/position",
+        `${API_URL}/organization-structure/change-request/position`,
         {
           method: "POST",
           headers: {
@@ -337,7 +338,7 @@ export default function MakeChangeRequestPage() {
             </select>
             {employees.length > 0 && (
               <p style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
-                {employees.length} position{employees.length !== 1 ? 's' : ''} found
+                {employees.length} employee{employees.length !== 1 ? 's' : ''} found
               </p>
             )}
           </div>

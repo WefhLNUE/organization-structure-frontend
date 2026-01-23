@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { API_URL } from '@/lib/config';
 import { checkAuth, hasRole, User } from '@/lib/auth';
 import { CheckCircle, AlertCircle } from "lucide-react";
 
@@ -37,7 +38,7 @@ export default function CreateDepartmentChangeRequestPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
 
   useEffect(() => {
-    const fetchUserAndData = async () => {
+    const fetchData = async () => {
       try {
         const userData = await checkAuth();
         if (!userData) {
@@ -48,24 +49,32 @@ export default function CreateDepartmentChangeRequestPage() {
         setAuthLoading(false);
 
         const token = localStorage.getItem("token");
-        const isAdminOrHR = hasRole(userData, 'System Admin') || hasRole(userData, 'HR Manager') || hasRole(userData, 'HR Admin');
-        const isDeptHead = hasRole(userData, 'Department Head');
-
-        // Fetch Employees
-        let empUrl = "http://localhost:5000/employee-profile/my-employees";
-        if (isAdminOrHR) {
-          empUrl = "http://localhost:5000/employee-profile/all-for-selection";
+        if (!token) {
+          setMessage("No authentication token found. Please log in again.");
+          return;
         }
 
-        const empRes = await fetch(empUrl, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const isAdminOrHR = hasRole(userData, 'System Admin') || hasRole(userData, 'HR Manager') || hasRole(userData, 'HR Admin');
+        const isDeptHead = hasRole(userData, 'department head');
 
-        let emps: any[] = [];
+        // Determine employee fetch URL based on role
+        let empUrl = `${API_URL}/employee-profile/my-employees`;
+        if (isAdminOrHR) {
+          empUrl = `${API_URL}/employee-profile/all-for-selection`;
+        }
+
+        const [empRes, deptRes] = await Promise.all([
+          fetch(empUrl, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch(`${API_URL}/organization-structure/departments`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+        ]);
+
         if (empRes.ok) {
-          let data = await empRes.json();
-          console.log("DEBUG: Employees raw data", data);
-          emps = Array.isArray(data) ? data : (data.data || data.employees || []);
+          const empData = await empRes.json();
+          let emps = Array.isArray(empData) ? empData : (empData.data || empData.employees || []);
 
           if (!isAdminOrHR && !isDeptHead) {
             // Regular employee: only self
@@ -73,11 +82,6 @@ export default function CreateDepartmentChangeRequestPage() {
           }
           setEmployees(emps);
         }
-
-        // Fetch Departments
-        const deptRes = await fetch("http://localhost:5000/organization-structure/departments", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
 
         if (deptRes.ok) {
           const deptData = await deptRes.json();
@@ -91,12 +95,12 @@ export default function CreateDepartmentChangeRequestPage() {
         }
 
       } catch (err) {
-        console.error("Error in fetchUserAndData:", err);
+        console.error("Error loading data:", err);
         setMessage("Error loading data");
       }
     };
 
-    fetchUserAndData();
+    fetchData();
   }, []);
 
 
@@ -113,7 +117,7 @@ export default function CreateDepartmentChangeRequestPage() {
       }
 
       const response = await fetch(
-        "http://localhost:5000/organization-structure/change-request/department",
+        `${API_URL}/organization-structure/change-request/department`,
         {
           method: "POST",
           headers: {
@@ -281,7 +285,7 @@ export default function CreateDepartmentChangeRequestPage() {
             </select>
             {employees.length > 0 && (
               <p style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
-                {employees.length} position{employees.length !== 1 ? 's' : ''} found
+                {employees.length} employee{employees.length !== 1 ? 's' : ''} found
               </p>
             )}
           </div>

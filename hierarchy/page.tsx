@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import EmployeeCard from "./EmployeeCard";
+import { API_URL } from '@/lib/config';
 
 interface EmployeeHierarchy {
   id: string;
@@ -96,7 +97,7 @@ export default function ViewHierarchyPage() {
         }
       } else {
         const response = await fetch(
-          `http://localhost:5000/organization-structure/hierarchy/${requestedId}`,
+          `${API_URL}/organization-structure/hierarchy/${decoded.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

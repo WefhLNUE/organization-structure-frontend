@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { checkAuth, hasRole, User } from '@/lib/auth';
+import { API_URL } from '@/lib/config';
 
 export default function CreateDepartmentPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -46,7 +47,7 @@ export default function CreateDepartmentPage() {
 
     try {
       const token = localStorage.getItem('token'); // Assuming token is stored
-      const response = await fetch('http://localhost:5000/organization-structure/departments', {
+      const response = await fetch(`${API_URL}/organization-structure/departments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

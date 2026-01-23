@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { API_URL } from '@/lib/config';
 
 type Position = {
   _id: string;
@@ -47,7 +48,7 @@ export default function DeletePositionPage() {
           return;
         }
 
-        const res = await fetch("http://localhost:5000/organization-structure/positions", {
+        const res = await fetch(`${API_URL}/organization-structure/positions`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -125,7 +126,7 @@ export default function DeletePositionPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:5000/organization-structure/positions/${selectedId}`, {
+      const response = await fetch(`${API_URL}/organization-structure/positions/${selectedId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

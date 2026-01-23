@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { API_URL } from '@/lib/config';
 
 type Department = {
   _id: string;
@@ -56,12 +57,12 @@ export default function DeleteDepartmentPage() {
         }
 
         const [deptRes, posRes] = await Promise.all([
-          fetch("http://localhost:5000/organization-structure/departments", {
+          fetch(`${API_URL}/organization-structure/departments`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
           }),
-          fetch("http://localhost:5000/organization-structure/positions", {
+          fetch(`${API_URL}/organization-structure/positions`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
@@ -130,7 +131,7 @@ export default function DeleteDepartmentPage() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/organization-structure/departments/${selectedId}`, {
+      const response = await fetch(`${API_URL}/organization-structure/departments/${selectedId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
