@@ -115,10 +115,6 @@ export default function OrganizationPage() {
               )}
               {isSystemAdmin && (
                 <>
-                  <Link href="/organization-structure/requests/myRequests" className="quick-action">
-                    <div className="icon-box" style={{ background: '#ecfdf5', color: '#059669' }}><Eye size={20} /></div>
-                    <span style={{ fontWeight: 600, color: '#1e293b', fontSize: '0.8125rem' }}>My Requests</span>
-                  </Link>
                   <Link href="/organization-structure/history" className="quick-action">
                     <div className="icon-box" style={{ background: '#f0f9ff', color: '#0ea5e9' }}><Calendar size={20} /></div>
                     <span style={{ fontWeight: 600, color: '#1e293b', fontSize: '0.8125rem' }}>History</span>

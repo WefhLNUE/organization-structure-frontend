@@ -64,12 +64,12 @@ export default function UpdateDepartmentPage() {
         }
 
         const [deptRes, posRes] = await Promise.all([
-          fetch(`${API_URL}/organization-structure/departments`, {
+          fetch(`${API_URL}/organization-structure/departments-all`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
           }),
-          fetch(`${API_URL}/organization-structure/positions`, {
+          fetch(`${API_URL}/organization-structure/positions-all`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },

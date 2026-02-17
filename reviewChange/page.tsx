@@ -98,7 +98,7 @@ export default function ReviewChangeRequestPage() {
       }
 
       const response = await fetch(
-        `${API_URL}/organization-structure/change-request/${id}/review`,
+        `${API_URL}/organization-structure/change-request/${reqNumber}/review`,
         {
           method: "POST",
           headers: {

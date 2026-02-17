@@ -19,7 +19,8 @@ type Employee = {
     firstName: string;
     lastName: string;
     workEmail: string;
-    position?: string; // Sometimes populated, sometimes not
+    position?: string; // Legacy field, might be empty
+    primaryPositionId?: { _id: string, title: string }; // Populated backend field
     primaryDepartmentId?: string | { _id: string, name: string };
     department?: { name: string }; // For display if populated
     departmentId?: string | { _id: string, name: string };
@@ -197,7 +198,7 @@ export default function ViewDepartmentEmployeesPage() {
                                                 {emp.workEmail || <span style={{ color: '#ef4444' }}>N/A</span>}
                                             </td>
                                             <td style={{ padding: '1rem', color: '#64748b', fontSize: '0.875rem' }}>
-                                                {emp.position || <span style={{ color: '#ef4444' }}>N/A</span>}
+                                                {emp.primaryPositionId?.title || emp.position || <span style={{ color: '#ef4444' }}>N/A</span>}
                                             </td>
                                             <td style={{ padding: '1rem', textAlign: 'right' }}>
                                                 <Link href={`/employee-profile/${emp._id}`} style={{ color: '#2563eb', fontSize: '0.875rem', fontWeight: 500, textDecoration: 'none' }}>

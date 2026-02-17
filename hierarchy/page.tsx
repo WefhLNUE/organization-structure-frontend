@@ -97,7 +97,7 @@ export default function ViewHierarchyPage() {
         }
       } else {
         const response = await fetch(
-          `${API_URL}/organization-structure/hierarchy/${decoded.id}`,
+          `${API_URL}/organization-structure/hierarchy/${requestedId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -378,13 +378,47 @@ export default function ViewHierarchyPage() {
         minHeight: '100vh',
         backgroundColor: '#F7FAFC', // Slate 50
         fontFamily: "'Inter', sans-serif",
-        zoom: 0.8
+        zoom: 0.8,
+        position: 'relative'
       } as any}
       onDragOver={handleGlobalDragOver}
       onDrop={stopAutoScroll}
       onDragEnd={stopAutoScroll}
       onDragLeave={stopAutoScroll}
     >
+      {/* Back to Dashboard Button - Top Left */}
+      <button
+        onClick={() => window.location.href = '/organization-structure'}
+        style={{
+          position: 'absolute',
+          top: '2rem',
+          left: '2rem',
+          padding: '0.6rem 1.25rem',
+          backgroundColor: 'white',
+          color: '#4a5568',
+          border: '1px solid #cbd5e1',
+          borderRadius: '0.5rem',
+          fontWeight: '600',
+          cursor: 'pointer',
+          transition: 'all 0.2s',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+          zIndex: 10
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = '#f8fafc';
+          e.currentTarget.style.borderColor = '#94a3b8';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'white';
+          e.currentTarget.style.borderColor = '#cbd5e1';
+        }}
+      >
+        ← Back to Dashboard
+      </button>
+
       <div style={{ marginBottom: '3rem', textAlign: 'center' }}>
         <h1 style={{
           fontSize: '2.5rem',
@@ -434,8 +468,10 @@ export default function ViewHierarchyPage() {
             >
               ← Back to Full Organization Tree
             </button>
+
           </div>
         )}
+
       </div>
 
       {loading && (
